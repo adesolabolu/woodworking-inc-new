@@ -1,12 +1,13 @@
 import React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cloudinaryConfig } from "../lib/cloudinary";
 
 interface UseImageUploadProps {
   onUpload?: (url: string) => void;
 }
 
 const generateSignature = async (timestamp: number) => {
-  const apiSecret = "me7HSSn8PlJVEwtTfQcZZMmMPWA";
+  const apiSecret = cloudinaryConfig.apiSecret;
   const str = `timestamp=${timestamp}${apiSecret}`;
   const msgUint8 = new TextEncoder().encode(str);
   const hashBuffer = await crypto.subtle.digest('SHA-1', msgUint8);
@@ -43,12 +44,12 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
           
           const formData = new FormData();
           formData.append("file", file);
-          formData.append("api_key", "551922289419343");
+          formData.append("api_key", cloudinaryConfig.apiKey);
           formData.append("timestamp", timestamp.toString());
           formData.append("signature", signature);
 
           const response = await fetch(
-            `https://api.cloudinary.com/v1_1/drzh5dzha/image/upload`,
+            `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
             {
               method: "POST",
               body: formData,
